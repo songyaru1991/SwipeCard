@@ -61,10 +61,48 @@ function getDValue() {
 	alert("Start Date: " + SDate + "End Date:" + EDate);
 }
 
-/**
- * �寞��交�蝺蝑�隞嗆閰Ｖ誑�內�株��箔蜓���
- * @returns
- */
+function showSwipeCardAbnormal() {
+	var workshopNo = $("#WorkshopNo").val();
+	var checkState = $("#checkState").val();
+	var SDate = $("#dpick1").val();
+	var EDate = $("#dpick2").val();
+	
+	
+	var urlA = "";
+	var urla1 = "overtime_order_pending_Abnormal.php";
+	var urla2 = "overtime_order_identified_Abnormal.php";
+	var urlB = "";
+	var urlb1 = "show_overtime_Abnormal_ing.php";
+	var urlb2 = "show_overtime_Abnormal_ed.php";
+	console.log(urlb1);
+	if (checkState.indexOf("0") >= 0 || checkState.indexOf("9") >= 0) {
+		urlA = urla1;
+		urlB = urlb1;
+	} else if (checkState == 1) {
+		urlA = urla2;
+		urlB = urlb2;
+	} else {
+		urlA = urla3;
+		urlB = urlb3;
+	}
+	// alert("urlA: "+ urlA);
+	$.ajax({
+		type : 'post',
+		url : urlB,
+		data : {
+			'workshopNo' : workshopNo,
+			'checkState' : checkState,
+			'SDate' : SDate,
+			'EDate' : EDate,
+			'urlA' : urlA
+		},
+		success : function(msg) {
+			// alert(msg);
+			$("#showRcNoTable").html(msg);
+		}
+	});
+}
+
 function showRCInforByDate() {
 	var workshopNo = $("#WorkshopNo").val();
 	var checkState = $("#checkState").val();

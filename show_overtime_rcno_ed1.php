@@ -46,6 +46,7 @@
                 where Date_format(a.swipecardtime, '%Y-%m-%d') >= '".$SDate."' 
                         and Date_format(a.swipecardtime, '%Y-%m-%d') <= '".$EDate."' 
                         and a.swipecardtime2 is not null 
+						and b.isOnWork=0
                         and a.`WorkshopNo` like '".$workshopNo."' 
                         and b.costid in ($cch)  
                 group by a.`WorkshopNo`,sdate,c.`class_no`,a.`rc_no`,a.`checkstate` 

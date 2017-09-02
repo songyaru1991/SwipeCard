@@ -87,7 +87,8 @@
 		var minus = 0;
 		var str=null;
 		t_s = t_set.split("*");
-	//	 console.log("t_set:" +t_set);
+		// console.log("t_set:" +t_set);
+		// console.log("t_s:" +t_s);
 		for ( var i = 0; i < checkbox1.length; i++) {
 			//alert("box[i]: "+checkbox[i].checked);
 			sdate[i] = checkbox1[i].value;    //上班时间
@@ -126,7 +127,16 @@
 		// var tempTime2 = new Date();//17 30
 		var tempEnd,tempStart;
 		for ( var i = 0; i < checkbox1.length; i++) {
-		// for ( var i = 0; i < 1; i++) {
+		
+		if(sdate[i]==edate[i]){
+		//	console.log("sdate: "+sdate[i]);
+		//	console.log("edate: "+edate[i]);
+			
+			minus = 99;           
+			sub = getHour(sdate1[i]) + "-" + getHour1(edate1[i]);
+		}
+		else{
+		
 			//minus-根據選擇的加班時間類型得出不同時段
 			if (cal == "1") {  //正常班
 				if(classEnd > classStart){ //班別無跨夜
@@ -153,17 +163,16 @@
             
 				if(classEnd > classStart){ //班別無跨夜
                 
-				    
 					for(var j = 0;j<t_s.length;j++){  //t_s[]休息间隔
 
-						//console.log("t_s[j]:" +t_s[j]);
+					//	console.log("t_s[j]:" +t_s[j]);
 						tempInterval = t_s[j].split("-");        //例：[07:40,09:30]
 						
 						tempHour1 = tempInterval[0].split(":"); //[07,40]
 						tempHour2 = tempInterval[1].split(":");  //[09,30]
    
-                        var	tempTime1 = new Date(checkbox1[i].value.substr(0,10)+" "+tempHour1[0]+":"+tempHour1[1]+":0"); //tempTime1设置为当前上班刷卡的日期
-                        var	tempTime2 = new Date(checkbox2[i].value.substr(0,10)+" "+tempHour2[0]+":"+tempHour2[1]+":0"); //tempHour2设置为当前上班时段的终止时间，如09:30
+                        var	tempTime1 = new Date(checkbox1[i].value.substr(0,10)+" "+tempHour1[0]+":"+tempHour1[1]+":0"); 
+                        var	tempTime2 = new Date(checkbox2[i].value.substr(0,10)+" "+tempHour2[0]+":"+tempHour2[1]+":0"); 
 
 						calStart = sdate1[i]-tempTime1;  //$calStart=上班时间-上班时段的起始时间
 						calEnd   = edate1[i]-tempTime2;  //$calEnd=下班时间-上班时段的终止时间
@@ -174,15 +183,11 @@
                         if((sdate1[i]-tempTime2)>0 && (edate1[i]-tempTime2)>0)
                             break;
                         
-                        if(calStart>0){    
-							tempStart = sdate1[i];							
-							//console.log("sdate111: "+sdate1[i]);
-							tempStart.setSeconds(0);    //当前时间的秒字段设置为 0																				
+                        if(calStart>0 || (j==0)){    
+							tempStart = sdate1[i];
+							tempStart.setSeconds(0);    
 						}else{  
 							tempStart = tempTime1;
-                             if(j==0){
-								 sdate1[i].setHours(t_s[0].substr(0,2), t_s[0].substr(3,2), 0);
-							 }
 						}
                         
                         if(calEnd<0 || (j==(t_s.length-1)))
@@ -192,46 +197,7 @@
                         }
                         else 
                             tempEnd = tempTime2;
-
-						/*
-						if(calEnd>0){           //下班时间  晚于 上班时段的终止时间
-						
-                            if(j==(t_s.length-1))
-                            {
-                                tempEnd = edate1[i];
-                                tempEnd.setSeconds(0);
-                            }
-                            else 
-							    tempEnd = tempTime2;//09:30
-                                
-							if(calStart>0){    //上班刷卡时间 晚于 上班时段的起始时间
-								tempStart = sdate1[i];//08:30
-								tempStart.setSeconds(0);    //当前时间的秒字段设置为 0
-							}else{               //上班刷卡时间 早于 上班时段的起始时间
-								tempStart = tempTime1;//07:40
-							}
-							
-						}else{                   ////下班时间 早于 上班时段的终止时间
-						
-							// $tempEnd = edate1[i];//10:30
-                            if(j==0)
-                            {
-                                tempStart = sdate1[i];//08:30
-								tempStart.setSeconds(0);
-                            }
-                            else
-							    tempStart = tempTime1;//09:40
-                                
-							tempEnd = edate1[i];//10:30
-							//minus += tempEnd - tempStart;
-							// console.log("123");
-							// var tempStart = new Date($tempStart);
-							// var tempEnd = new Date($tempEnd);
-							// console.log("tempStart:"+ tempStart);
-							// console.log("tempEnd:"+ tempEnd);
-						}
-                        */
-						
+					
 						minus += tempEnd - tempStart;
 					}
 				}else{                                  //夜班
@@ -281,14 +247,11 @@
                         if((sdate1[i]-tempTime2)>0 && (edate1[i]-tempTime2)>0)
                             break;
                         
-                        if(calStart>0){    //上班刷卡时间 晚于 上班时段的起始时间
+                        if(calStart>0 || (j==0)){    //上班刷卡时间 晚于 上班时段的起始时间
 							tempStart = sdate1[i];
 							tempStart.setSeconds(0);    //当前时间的秒字段设置为 0
 						}else{  //上班刷卡时间 早于 上班时段的起始时间
 							tempStart = tempTime1;
-							 if(j==0){
-								 sdate1[i].setHours(t_s[0].substr(0,2), t_s[0].substr(3,2), 0);
-							 }
 						}
                         
                         if(calEnd<0 || (j==(t_s.length-1)))
@@ -298,55 +261,14 @@
                         }
                         else 
                             tempEnd = tempTime2;
-                            
-                        /*    
-						if(calEnd>0){
-						  
-						    if(j==(t_s.length-1))
-                            {
-                                tempEnd = edate1[i];
-                                tempEnd.setSeconds(0);
-                            }    
-                            else    
-							    tempEnd = tempTime2;//09:30
-                                
-							if(calStart>0){
-								tempStart = sdate1[i];//08:30
-								tempStart.setSeconds(0);
-							}else{
-							    if(j==0)
-                                {
-                                    tempStart = sdate1[i];//08:30
-    								tempStart.setSeconds(0);
-                                }
-                                else
-								    tempStart = tempTime1;//07:40
-							}
-						}else{
-							// $tempEnd = edate1[i];//10:30
-							if(j==0)
-                            {
-                                tempStart = sdate1[i];//08:30
-								tempStart.setSeconds(0);
-                            }
-                            else
-							    tempStart = tempTime1;//07:40
-                                
-							tempEnd = edate1[i];//10:30
-							//minus += tempEnd - tempStart;
-							// console.log("123");
-							// var tempStart = new Date($tempStart);
-							// var tempEnd = new Date($tempEnd);
-							// console.log("$tempStart:"+ tempStart);
-							// console.log("$tempEnd:"+ tempEnd);
-						}
-                        */
+     
 						minus += tempEnd - tempStart;
 					}
 				}
 				
 				//根據選擇的加班時間類型得出不同時段
 			}
+		
 			minus = minus / 3600000;
 			minus = getNum(minus);
             
@@ -354,10 +276,9 @@
                 minus = 0;
             }
             
-			//console.log("sdate1: "+sdate1[4]);
-			sub = getHour(sdate1[i]) + "-" + getHour1(edate1[i]);			
+			sub = getHour(sdate1[i]) + "-" + getHour1(edate1[i]);
+		}
 			//console.log("時段sub: "+sub);
-			
 			calInterval[i] = sub;
 			calHour[i] = minus;
 			//console.log("時段sub: " + sub);
@@ -818,37 +739,120 @@
 	// echo $cch;
 		
 		include("mysql_config.php");
-        $employee_overtime_sql = "select b.id,
-                                        b.NAME,
-                                        b.depid,
-                                        b.depname,
-                                        b.direct,
-                                        b.costid, 
-                                        Date_format(a.swipecardtime, '%Y-%m-%d') AS yd,
-                        			    a.checkstate,
-                        			    a.recordid,
-                        			    a.overtimeCal,
-                        			    a.overtimeType,
-                        			    a.swipecardtime,
-                        			    a.swipecardtime2
-                                FROM `testswipecardtime` a left join `testemployee` b on a.`CardID`=b.`CardID` 
-                                        left join `emp_class` c on b.`ID`=c.`ID` and c.`emp_date`=substring(a.swipecardtime,1,10) 
-                                where Date_format(a.swipecardtime, '%Y-%m-%d') = '".$SDate."' 
-                                        and a.swipecardtime2 is not null 
-										and b.isOnWork=0
-                                        and a.`WorkshopNo` = '".$WorkshopNo."' 
-                                        and a.`rc_no` = '".$RC_NO."' 
-                                        and a.checkstate in('0','9') 
-                                        and b.costid in ($cch) ";
+
+		 $employee_overtime_sql = "SELECT
+									t.id,
+									t. NAME,
+									t.depid,
+									t.depname,
+									t.direct,
+									t.costid,
+									DATE_FORMAT(t.swipecardtime, '%Y-%m-%d') AS yd,
+									t.checkstate,
+									t.recordid,
+									t.overtimeCal,
+									t.overtimeType,
+									t.swipecardtime,
+									t.swipecardtime2
+							FROM
+							(
+								(SELECT
+									b.id,
+									b. NAME,
+									b.depid,
+									b.depname,
+									b.direct,
+									b.costid,
+									DATE_FORMAT(a.swipecardtime, '%Y-%m-%d') AS yd,
+									a.checkstate,
+									a.recordid,
+									a.overtimeCal,
+									a.overtimeType,
+									a.swipecardtime,
+									IFNULL(a.swipecardtime2, a.swipecardtime) swipecardtime2,
+									a.WorkshopNo,
+									a.RC_NO,
+									c.class_no
+								FROM
+									`testswipecardtime` a
+								LEFT JOIN `testemployee` b ON a.`CardID` = b.`CardID`
+								LEFT JOIN `emp_class` c ON b.`ID` = c.`ID`
+									AND c.`emp_date` = SUBSTRING(a.swipecardtime, 1, 10)
+								WHERE
+									DATE_FORMAT(a.swipecardtime, '%Y-%m-%d') = '".$SDate."'
+                                    and a.swipecardtime2 is null
+									AND b.isOnWork = 0									
+								)
+						UNION
+								(SELECT
+								b.id,
+								b. NAME,
+								b.depid,
+								b.depname,
+								b.direct,
+								b.costid,
+								DATE_FORMAT(a.swipecardtime, '%Y-%m-%d') AS yd,
+								a.checkstate,
+								a.recordid,
+								a.overtimeCal,
+								a.overtimeType,
+								IFNULL(a.swipecardtime,a.swipecardtime2) swipecardtime,
+								a.swipecardtime2,
+								a.WorkshopNo,
+								a.RC_NO,
+								c.class_no
+							FROM
+								`testswipecardtime` a
+								LEFT JOIN `testemployee` b ON a.`CardID` = b.`CardID`
+								LEFT JOIN `emp_class` c ON b.`ID` = c.`ID`
+								AND c.`emp_date` = SUBSTRING(a.swipecardtime2, 1, 10)
+							WHERE
+								DATE_FORMAT(a.swipecardtime2, '%Y-%m-%d') = '".$SDate."'
+								and a.swipecardtime is null and shift='D'
+								AND b.isOnWork = 0
+								)
+							UNION
+								(SELECT
+								b.id,
+								b. NAME,
+								b.depid,
+								b.depname,
+								b.direct,
+								b.costid,
+								DATE_FORMAT(a.swipecardtime, '%Y-%m-%d') AS yd,
+								a.checkstate,
+								a.recordid,
+								a.overtimeCal,
+								a.overtimeType,
+								IFNULL(a.swipecardtime,a.swipecardtime2) swipecardtime,
+								a.swipecardtime2,
+								a.WorkshopNo,
+								a.RC_NO,
+								c.class_no
+							FROM
+								`testswipecardtime` a
+								LEFT JOIN `testemployee` b ON a.`CardID` = b.`CardID`
+								LEFT JOIN `emp_class` c ON b.`ID` = c.`ID`
+								AND c.`emp_date` = SUBSTRING(DATE_ADD(a.swipecardtime2,INTERVAL - 1 DAY), 1, 10)
+							WHERE
+								DATE_FORMAT(a.swipecardtime2, '%Y-%m-%d') = DATE_ADD('".$SDate."',INTERVAL + 1 DAY) 
+								and a.swipecardtime is null and shift='N'
+								AND b.isOnWork = 0								
+							) 
+							) t 
+							where t.`WorkshopNo` = '".$WorkshopNo."' 
+                                and t.`rc_no` = '".$RC_NO."' 
+								AND t.checkstate IN ('0', '9')
+								AND t.costid IN ($cch)";								
                                         
         if($Shift=="")
-            $employee_overtime_sql .= "and c.`class_no` is null ";
+            $employee_overtime_sql .= "and t.`class_no` is null ";
         else
-            $employee_overtime_sql .= "and c.`class_no`='".$Shift."'  ";
+            $employee_overtime_sql .= "and t.`class_no`='".$Shift."'  ";
             
-        $employee_overtime_sql .= "order by b.depid,b.id ";
+        $employee_overtime_sql .= "order by t.depid,t.id ";
 		
-		//echo $employee_overtime_sql;
+    	//	echo $employee_overtime_sql;
 		$interval_sql = "select class_start,rest_start1,rest_end1,rest_start2,rest_end2,class_end,overtime_start from `classno` where class_no='$Shift'";
 		//echo $interval_sql.'<br>';
 		$timeset_row = $mysqli->query($interval_sql);

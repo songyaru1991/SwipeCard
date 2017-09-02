@@ -34,25 +34,135 @@
 		// echo $cch."<br>";
 	}
 	// echo $cch;
-	
-    $rcno_sql = "select a.`WorkshopNo`,
-                        Date_format(a.swipecardtime, '%Y-%m-%d') sdate,
-                        c.`class_no`,
-                        a.`rc_no`,
-                        a.`checkstate`,
-                        count(*) 
-                FROM `testswipecardtime` a left join `testemployee` b on a.`CardID`=b.`CardID` 
-                        left join `emp_class` c on b.`ID`=c.`ID` and c.`emp_date`=substring(a.swipecardtime,1,10)
-                where Date_format(a.swipecardtime, '%Y-%m-%d') >= '".$SDate."' 
-                        and Date_format(a.swipecardtime, '%Y-%m-%d') <= '".$EDate."' 
-                        and a.swipecardtime2 is not null 
-						and b.isOnWork=0
-                        and a.`WorkshopNo` like '".$workshopNo."' 
-                        and b.costid in ($cch)  
-                group by a.`WorkshopNo`,sdate,c.`class_no`,a.`rc_no`,a.`checkstate` 
-                order by a.`WorkshopNo`,sdate,c.`class_no`,a.`rc_no`,a.`checkstate` ";
-    
-   // echo $rcno_sql;            
+
+   $rcno_sql="SELECT
+	t.WorkshopNo,
+	t.sdate,
+	t.class_no,
+	t.rc_no,
+	t.checkstate,
+	SUM(t.count)
+FROM
+	(
+		(
+			SELECT
+				a.`WorkshopNo`,
+				DATE_FORMAT(a.swipecardtime, '%Y-%m-%d') sdate,
+				IFNULL(DATE_FORMAT(a.swipecardtime2,'%Y-%m-%d'),DATE_FORMAT(a.swipecardtime, '%Y-%m-%d')) edate,
+				c.`class_no`,
+				a.`rc_no`,
+				a.`checkstate`,
+				COUNT(*) count
+			FROM
+				`testswipecardtime` a
+			LEFT JOIN `testemployee` b ON a.`CardID` = b.`CardID`
+			LEFT JOIN `emp_class` c ON b.`ID` = c.`ID`
+			AND c.`emp_date` = SUBSTRING(a.swipecardtime, 1, 10)
+			WHERE
+				DATE_FORMAT(a.swipecardtime, '%Y-%m-%d') >= '".$SDate."'
+			AND DATE_FORMAT(a.swipecardtime, '%Y-%m-%d') <= '".$EDate."'
+			and a.swipecardtime2 is null
+			AND b.isOnWork = 0
+			AND a.`WorkshopNo` LIKE '".$workshopNo."'
+			AND b.costid IN ($cch)
+			GROUP BY
+				a.`WorkshopNo`,
+				sdate,
+				edate,
+				c.`class_no`,
+				a.`rc_no`,
+				a.`checkstate`
+			ORDER BY
+				a.`WorkshopNo`,
+				sdate,
+				c.`class_no`,
+				a.`rc_no`,
+				a.`checkstate`
+		)
+		UNION
+			(
+				SELECT
+					a.`WorkshopNo`,
+					IFNULL(DATE_FORMAT(a.swipecardtime, '%Y-%m-%d'),DATE_FORMAT(a.swipecardtime2,'%Y-%m-%d')) sdate,
+					DATE_FORMAT(a.swipecardtime2,'%Y-%m-%d') edate,
+					c.`class_no`,
+					a.`rc_no`,
+					a.`checkstate`,
+					COUNT(*) count
+				FROM
+					`testswipecardtime` a
+				LEFT JOIN `testemployee` b ON a.`CardID` = b.`CardID`
+				LEFT JOIN `emp_class` c ON b.`ID` = c.`ID`
+				AND c.`emp_date` = SUBSTRING(a.swipecardtime2, 1, 10)
+				WHERE
+					DATE_FORMAT(a.SwipeCardTime2,'%Y-%m-%d') >= '".$SDate."'
+				AND DATE_FORMAT(a.SwipeCardTime2,'%Y-%m-%d') <= '".$EDate."'
+				AND a.SwipeCardTime IS NULL
+				AND a.shift = 'D'
+				AND b.isOnWork = 0
+				AND a.`WorkshopNo` LIKE '".$workshopNo."'
+				AND b.costid IN ($cch)
+				GROUP BY
+					a.`WorkshopNo`,
+					sdate,
+					edate,
+					c.`class_no`,
+					a.`rc_no`,
+					a.`checkstate`
+				ORDER BY
+					a.`WorkshopNo`,
+					sdate,
+					c.`class_no`,
+					a.`rc_no`,
+					a.`checkstate`
+			)
+		UNION
+			(
+				SELECT
+					a.`WorkshopNo`,
+					IFNULL(DATE_FORMAT(a.swipecardtime, '%Y-%m-%d'),DATE_FORMAT(DATE_ADD(a.swipecardtime2,INTERVAL - 1 DAY),'%Y-%m-%d')) sdate,
+					DATE_FORMAT(a.swipecardtime2,'%Y-%m-%d') edate,
+					c.`class_no`,
+					a.`rc_no`,
+					a.`checkstate`,
+					COUNT(*) count
+				FROM
+					`testswipecardtime` a
+				LEFT JOIN `testemployee` b ON a.`CardID` = b.`CardID`
+				LEFT JOIN `emp_class` c ON b.`ID` = c.`ID`
+				AND c.`emp_date` = SUBSTRING(DATE_ADD(a.swipecardtime2,INTERVAL - 1 DAY),1,10)
+				WHERE
+					DATE_FORMAT(a.SwipeCardTime2,'%Y-%m-%d') >= DATE_ADD('".$SDate."', INTERVAL + 1 DAY)
+				AND DATE_FORMAT(a.SwipeCardTime2,'%Y-%m-%d') <= DATE_ADD('".$EDate."', INTERVAL + 1 DAY)
+				AND a.SwipeCardTime IS NULL
+				AND b.isOnWork = 0
+				AND a.shift = 'N'
+				AND a.`WorkshopNo` LIKE '".$workshopNo."'
+				AND b.costid IN ($cch)
+				GROUP BY
+					a.`WorkshopNo`,
+					sdate,
+					edate,
+					c.`class_no`,
+					a.`rc_no`,
+					a.`checkstate`
+				ORDER BY
+					a.`WorkshopNo`,
+					sdate,
+					c.`class_no`,
+					a.`rc_no`,
+					a.`checkstate`
+			)
+	) t
+GROUP BY
+	t.`WorkshopNo`,
+	t.sdate,
+	t.`class_no`,
+	t.`rc_no`,
+	t.`checkstate`";
+
+ 
+ //   echo $rcno_sql;            
     $rcno_rows = $mysqli->query($rcno_sql);
 	$cch = "";
     $rc_list = array();
@@ -85,7 +195,8 @@
     }
     $rcnoStr = substr($rcnoStr,0,-1);
     mysqli_free_result($rcno_rows);
-    
+	
+	
     $manPower_sql = "select rc_no,std_man_power,primary_item_no from testrcline 
                     where CUR_DATE > DATE_SUB(curdate(),INTERVAL 30 DAY) ";
                     

@@ -64,6 +64,8 @@ while($row = $line_rows->fetch_row()){
 				<option value="1">已審核</option>
 			</select> <input name="" class="btn btn-primary" type="button"
 				onclick="showRCInforByDate();" value="查詢" />
+			</select> <input name="" class="btn btn-primary" type="button"
+				onclick="showSwipeCardAbnormal();" value="忘卡查詢" />
 
 
 		</div>

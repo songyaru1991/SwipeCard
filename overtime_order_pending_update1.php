@@ -28,8 +28,8 @@
 		$assistant_id = $_SESSION['assistant_id'];
 		
 		$person_sql = "select * from assistant_data where application_id='$assistant_id'";
-		
-		//echo $person_sql."<Br>";
+				
+		//echo $person_sql."<Br>";	
 		
 		$zhuli_rows = $mysqli->query($person_sql);
 		while($row = $zhuli_rows->fetch_assoc()){
@@ -63,6 +63,8 @@
 		$yds = $_POST['ydss'];
 		$depids = $_POST['depids'];
 		
+	//	echo "calHour:".count($calHour);		
+		
 		$a = array();
 		// var_dump($checkValue);
 		// echo count($checkValue);
@@ -83,19 +85,39 @@
 			$a[$i][8]=$directs[$i];
             
             if($timeType==1&&$calHour[$i]!=2){
-				$exception = 1;
+				if($calHour[$i]==99){
+					$exception = 2;
+					$a[$i][6]=0;
+					}
+					else{
+						$exception = 1;
+						}
+				
 			}else if(($timeType==2||$timeType==3)&&$calHour[$i]!=10){
-				$exception = 1;
+				if($calHour[$i]==99){
+					$exception = 2;
+					$a[$i][6]=0;
+					}
+					else{
+						$exception = 1;
+						}
 			}else{
 				$exception = 0;
 			}
+			
 			$a[$i][9]=$exception;
+			
+			if($calHour[$i]==99){
+				$calHour[$i]=0;
+			}
+			
 		}
 		// var_dump($calHour);
 		// exit;
 		
+		
 		for($i=0;$i<count($checkValue);$i++){
-			$update_sql = "update testswipecardtime set CheckState = '1',overtimeCal='".$timeCal."',overtimeType='".$timeType."' where RecordId = '".$a[$i][0]."'";
+			$update_sql = "update testswipecardtime set CheckState = '1',overtimeCal='".$timeCal."',overtimeType='".$timeType."' where RecordId = '".$a[$i][0]."'";			
 			$cch = "insert into notes_overtime_state (id,name,depid,depname,overtimeInterval,overtimeHours,costID,
 		        	Direct,isException,overtimeDate,shift,overtimeType,WorkshopNo,RC_NO,PRIMARY_ITEM_NO,WorkContent,application_person, application_id,
        		    	application_dep, application_tel) 
@@ -117,11 +139,20 @@
 			$insert_sql = $cch;
 			
 			 $cch = '';
-		//	 echo $update_sql."<br>";
-		//	 echo $insert_sql."<br>";
-			
-			$update_rows = $mysqli->query($update_sql);
-			$insert_rows =$mysqli->query($insert_sql);
+			 
+			$overTime_sql = "SELECT * FROM `notes_overtime_state` WHERE id='".$a[$i][1]."' and overTimeDate='".$yds."'"; 
+			 echo $overTime_sql."<br>";
+			 $result=$mysqli->query($overTime_sql);
+             $num_rows = mysqli_num_rows( $result );
+		     echo "$num_rows Rows\n";
+             mysqli_free_result($overTime_rows);
+			 												
+			if($num_rows==0){
+			//	echo $update_sql."<br>";
+		    //   echo $insert_sql."<br>";
+				$update_rows = $mysqli->query($update_sql);
+				$insert_rows =$mysqli->query($insert_sql);
+			}
 		}
 	
 		$mysqli->close();

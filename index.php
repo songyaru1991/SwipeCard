@@ -6,6 +6,13 @@
 	$userName = $_SESSION['userName'];
 	// echo $_SESSION["ssn_usr"];
 	// echo "username ".$userName;
+    if($userName=="")
+    {
+        echo "<meta http-equiv='content-type' content='text/html; charset=UTF-8'>";
+        echo "<script language=\"javascript\">"; 
+        echo "top.location.href='http://".$_SERVER['HTTP_HOST']."/SwipeCard/Login.php'";
+        echo "</script>"; 
+    }
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1">
@@ -78,7 +85,7 @@
                         {
 							"menuname" : "工時預警",
 							"icon" : "icon-nav",
-							"url" : "Compute_Hours_Warning.php"
+							"url" : "Compute_Hours_Warning1.php"
 						} ]
 					}, {
 						"menuid" : "56",
