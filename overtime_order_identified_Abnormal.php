@@ -489,6 +489,7 @@
                                 FROM `notes_overtime_state` a left join `testemployee` b on a.`ID`=b.`ID` 
                                         left join `emp_class` c on b.`ID`=c.`ID` and c.`emp_date`=a.`overTimeDate` 
                                 where Date_format(a.overtimedate, '%Y-%m-%d') = '".$SDate."' 
+								        and a.overtimeHours='0'
                                         and a.`WorkshopNo` = '".$WorkshopNo."'
                                         and b.isOnWork=0										
                                         and a.`rc_no` = '".$RC_NO."' 

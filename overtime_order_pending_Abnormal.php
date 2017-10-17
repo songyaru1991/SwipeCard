@@ -178,10 +178,10 @@
 						calEnd   = edate1[i]-tempTime2;  //$calEnd=下班时间-上班时段的终止时间
                         
                         if((sdate1[i]-tempTime1)<0 && (edate1[i]-tempTime1)<0)
-                            break;
+                            continue;
                             
                         if((sdate1[i]-tempTime2)>0 && (edate1[i]-tempTime2)>0)
-                            break;
+                            continue;
                         
                         if(calStart>0 || (j==0)){    
 							tempStart = sdate1[i];
@@ -824,8 +824,8 @@
 								a.recordid,
 								a.overtimeCal,
 								a.overtimeType,
-								IFNULL(a.swipecardtime,a.swipecardtime2) swipecardtime,
-								a.swipecardtime2,
+								IFNULL(a.swipecardtime,DATE_ADD(a.swipecardtime2,INTERVAL - 1 DAY)) swipecardtime,
+								DATE_ADD(a.swipecardtime2,INTERVAL - 1 DAY) swipecardtime2,
 								a.WorkshopNo,
 								a.RC_NO,
 								c.class_no

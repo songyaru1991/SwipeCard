@@ -1,5 +1,5 @@
-<?php 
-    set_time_limit(0); 
+<?php
+    set_time_limit(0);
 	session_start();
 	$access = $_SESSION["permission"];
 ?>
@@ -11,26 +11,26 @@
 <title>Insert title here</title>
 <script src="assets/js/jquery-1.8.3.min.js"></script>
 <script type="text/javascript">
-	
+
 </script>
 </head>
 <body>
-	<?php 
-			
+	<?php
+
 		include("mysql_config.php");
-		
+
 		$timeCal = $_POST['timeCal'];
 		$timeType = $_POST['timeType'];
 		$workshopNo = $_POST['workshopNo'];
 		$rC_NO = $_POST['rC_NO'];
 		$item_No = $_POST['item_No'];
-		
+
 		$assistant_id = $_SESSION['assistant_id'];
-		
+
 		$person_sql = "select * from assistant_data where application_id='$assistant_id'";
-				
-		//echo $person_sql."<Br>";	
-		
+
+		//echo $person_sql."<Br>";
+
 		$zhuli_rows = $mysqli->query($person_sql);
 		while($row = $zhuli_rows->fetch_assoc()){
 			$application_person = $row['application_person'];
@@ -39,32 +39,32 @@
 			$application_tel = $row['application_tel'];
 		}
         mysqli_free_result($zhuli_rows);
-		
+
         if(strcmp($application_person,"")<=0){
 			echo "alert(\"當前登錄線長或助理登錄信息缺失，請嘗試更換電腦，或者重新登錄！\");\n";
 			return false;
 		}
-		
+
 		if($_POST['workcontent']){
 			$WorkContent = $_POST['workcontent'];
 		}else{
 			$WorkContent = $item_No."_".$rC_NO;
 		}
-		// echo "workContent: ".$WorkContent;
+		 //echo "workContent: ".$WorkContent;
 		$calHour = $_POST['calHour'];
-		$calInterval = $_POST['calInterval'];	
+		$calInterval = $_POST['calInterval'];
 		$checkValue = $_POST['dropId'];
 		$ids = $_POST['ids'];
-		$names = $_POST['names'];	
+		$names = $_POST['names'];
 		$depname = $_POST['depname'];
 		$costids = $_POST['costids'];
 		$directs = $_POST['directs'];
 		$shift = $_POST['shift'];
 		$yds = $_POST['ydss'];
 		$depids = $_POST['depids'];
-		
-	//	echo "calHour:".count($calHour);		
-		
+
+	//	echo "calHour:".count($calHour);
+
 		$a = array();
 		// var_dump($checkValue);
 		// echo count($checkValue);
@@ -76,15 +76,20 @@
 			$a[$i][4]=$depname[$i];
 			$a[$i][5]=$calInterval[$i];
 			$a[$i][6]=$calHour[$i];
-			 
+
 			if($calHour[$i]==0){
 				echo "alert(\"工時小於等於0，有誤，請重新選擇加班人員！\");\n";
 				return false;
 			}
 			$a[$i][7]=$costids[$i];
 			$a[$i][8]=$directs[$i];
-            
-            if($timeType==1&&$calHour[$i]!=2){
+//			if($timeCal==1&&$timeType==2&&$calHour[$i]>2){
+//			    $exception=1;
+//            }elseif ($timeCal==1&&$timeType==2&&$calHour<=2){
+//			    $exception=0;
+//            }
+//
+            if($timeType==1&&$calHour[$i]>2){
 				if($calHour[$i]==99){
 					$exception = 2;
 					$a[$i][6]=0;
@@ -92,8 +97,8 @@
 					else{
 						$exception = 1;
 						}
-				
-			}else if(($timeType==2||$timeType==3)&&$calHour[$i]!=10){
+
+			}else if(($timeType==2||$timeType==3)&&$calHour[$i]>10){
 				if($calHour[$i]==99){
 					$exception = 2;
 					$a[$i][6]=0;
@@ -101,23 +106,33 @@
 					else{
 						$exception = 1;
 						}
-			}else{
+			}//调班判断逻辑，选取时间为正常班，加班类型选2或3，此时加班时数>2时会抛异常，<=2会正常抛转
+			else if($timeCal==1&&($timeType==2||$timeType==3)&&$calHour[$i]>2){
+                if($calHour[$i]==99){
+                    $exception=2;
+                    $a[$i][6]=0;}
+                    else{
+                        $exception=1;
+                }
+
+            }
+			else{
 				$exception = 0;
 			}
-			
+
 			$a[$i][9]=$exception;
-			
+
 			if($calHour[$i]==99){
 				$calHour[$i]=0;
 			}
-			
+
 		}
 		// var_dump($calHour);
 		// exit;
-		
-		
+
+
 		for($i=0;$i<count($checkValue);$i++){
-			$update_sql = "update testswipecardtime set CheckState = '1',overtimeCal='".$timeCal."',overtimeType='".$timeType."' where RecordId = '".$a[$i][0]."'";			
+			$update_sql = "update testswipecardtime set CheckState = '1',overtimeCal='".$timeCal."',overtimeType='".$timeType."' where RecordId = '".$a[$i][0]."'";
 			$cch = "insert into notes_overtime_state (id,name,depid,depname,overtimeInterval,overtimeHours,costID,
 		        	Direct,isException,overtimeDate,shift,overtimeType,WorkshopNo,RC_NO,PRIMARY_ITEM_NO,WorkContent,application_person, application_id,
        		    	application_dep, application_tel) 
@@ -137,24 +152,24 @@
 			$cch .= "'".$application_dep."',";
 			$cch .= "'".$application_tel."')";
 			$insert_sql = $cch;
-			
+
 			 $cch = '';
-			 
-			$overTime_sql = "SELECT * FROM `notes_overtime_state` WHERE id='".$a[$i][1]."' and overTimeDate='".$yds."'"; 
-			 echo $overTime_sql."<br>";
+
+			$overTime_sql = "SELECT * FROM `notes_overtime_state` WHERE id='".$a[$i][1]."' and overTimeDate='".$yds."'";
+			// echo $overTime_sql."<br>";
 			 $result=$mysqli->query($overTime_sql);
              $num_rows = mysqli_num_rows( $result );
-		     echo "$num_rows Rows\n";
+		   // echo "$num_rows Rows\n";
              mysqli_free_result($overTime_rows);
-			 												
+            $update_rows = $mysqli->query($update_sql);
 			if($num_rows==0){
 			//	echo $update_sql."<br>";
 		    //   echo $insert_sql."<br>";
-				$update_rows = $mysqli->query($update_sql);
+
 				$insert_rows =$mysqli->query($insert_sql);
 			}
 		}
-	
+
 		$mysqli->close();
 ?>
 

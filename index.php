@@ -98,7 +98,7 @@
 						}, {
 							"menuname" : "修改密碼",
 							"icon" : "icon-nav",
-							"url" : "demo1.html"
+							"url" : "xgmm.php"
 						} ]
 					} ]
 				};
@@ -153,7 +153,7 @@
 				}, {
 					"menuname" : "修改密碼",
 					"icon" : "icon-nav",
-					"url" : "demo1.html"
+					"url" : "xgmm.php"
 				} ]
 			} ]
 		};

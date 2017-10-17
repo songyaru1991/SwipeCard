@@ -44,7 +44,7 @@ while($row = $line_rows->fetch_row()){
 		<div class="panel-body" style="border: 1px solid #e1e3e6;">
 			開始日期-<input id="dpick1" class="Wdate" type="text"
 				onClick="WdatePicker()"> 結束日期-<input id="dpick2"
-				class="Wdate" type="text" onClick="WdatePicker()"> 車間<select
+				class="Wdate" type="text" onClick="WdatePicker({maxDate:'%y-%M-#{%d-1}'})"> 車間<select
 				id="WorkshopNo">
 				<option value="%">All</option>
 				<?php 
