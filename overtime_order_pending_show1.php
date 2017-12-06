@@ -65,20 +65,25 @@ $access = $_SESSION["permission"];
         }
 
 
+    function allCheck(check) {
+        var checkbox = document.getElementsByName("checkbox");
 
-        function allCheck(check) {
-            var checkbox = document.getElementsByName("checkbox");
+        var over_hour = document.getElementsByClassName('overHour');
 
-            if (check.checked) {
-                for (var i = 0; i < checkbox.length; i++) {
+        if (check.checked) {
+            for (var i = 0; i < checkbox.length; i++) {
+                if (over_hour[i].innerHTML == "0") {
+                    checkbox[i].checked = false
+                } else {
                     checkbox[i].checked = "checked";
                 }
-            } else {
-                for (var i = 0; i < checkbox.length; i++) {
-                    checkbox[i].checked = "";
-                }
+            }
+        } else {
+            for (var i = 0; i < checkbox.length; i++) {
+                checkbox[i].checked = "";
             }
         }
+    }
 
         function getValue() {//此為取recordID
             var checkbox = document.getElementsByName("che");
@@ -197,6 +202,7 @@ $access = $_SESSION["permission"];
                 } else if (cal == "2") {   //假日班
                     // minus = (edate1[i] - sdate1[i]) / 3600000 - 2;
                     console.log("t_s:" + t_s);
+
                     if (t_s[t_s.length - 1].length < 11) //若最後一個時間段是overtime_start的數據，假日班忽略
                         t_s.splice((t_s.length - 1), 1);
 
@@ -313,22 +319,25 @@ $access = $_SESSION["permission"];
                             console.log("tempEnd:" + tempEnd);
 
                             minus += tempEnd - tempStart;
+
                         }
                     } else {                                  //夜班
                         // minus = (edate1[i] - sdate1[i]);
                         for (var j = 0; j < t_s.length; j++) {
                             // for(var j = 0;j<1;j++){
                             var x = $("#1").find("[name='yd']").val();     //yd:下班刷卡时间日期-12小时   yd24小时制
+
                             tempTime = getDate1(x);              //取得夜班下班刷卡时间-12小时的日期
                             // console.log(typeof(x));
                             tempInterval = t_s[j].split("-");              //例：[07:40,09:30]
                             tempHour1 = tempInterval[0].split(":");        //[07,40]
                             tempHour2 = tempInterval[1].split(":");        //[09,30]
+
                             // console.log(edate1[i]);
                             // console.log(tempHour2[0]);
 
                             var tempTime1 = new Date(tempTime);
-                            if (tempHour1[0] > 0 && tempHour1[0] < 12) {
+                            if (tempHour1[0] >= 0 && tempHour1[0] < 12) {
                                 tempTime1 = new Date(tempTime.getTime() + 24 * 60 * 60 * 1000);
                                 tempTime1 = tempTime1.setHours(tempHour1[0], tempHour1[1], 0);
                             } else {
@@ -744,6 +753,7 @@ $access = $_SESSION["permission"];
                     depids[i] = document.getElementById("tbl").rows[jtest].cells[4].innerText;
 
                     costids[i] = document.getElementById("tbl").rows[jtest].cells[5].innerText;
+
                     directs[i] = document.getElementById("tbl").rows[jtest].cells[6].innerText;
 
                     yds[i] = document.getElementById("tbl").rows[jtest].cells[7].innerText;
@@ -933,6 +943,7 @@ foreach ($temp_cost as $key => $val) {
 // echo $cch;
 
 include("mysql_config.php");
+
 $employee_overtime_sql = "select b.id,
                                         b.NAME,
                                         b.depid,
@@ -946,7 +957,7 @@ $employee_overtime_sql = "select b.id,
                         			    a.overtimeType,
                         			    a.swipecardtime,
                         			    a.swipecardtime2
-                                FROM `testswipecardtime` a left join `testemployee` b on a.`CardID`=b.`CardID` 
+                                FROM `testswipecardtime` a left join `testemployee` b on a.`ID`=b.`ID` 
                                         left join `emp_class` c on b.`ID`=c.`ID` and c.`emp_date`=substring(a.swipecardtime,1,10) 
                                 where Date_format(a.swipecardtime, '%Y-%m-%d') = '" . $SDate . "' 
                                         and a.swipecardtime2 is not null 
