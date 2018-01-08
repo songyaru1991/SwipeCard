@@ -63,6 +63,7 @@ function getDValue() {
 
 function showSwipeCardAbnormal() {
 	var workshopNo = $("#WorkshopNo").val();
+	var lineno = $("#LineNo").val();
 	var checkState = $("#checkState").val();
 	var SDate = $("#dpick1").val();
 	var EDate = $("#dpick2").val();
@@ -85,12 +86,13 @@ function showSwipeCardAbnormal() {
 		urlA = urla3;
 		urlB = urlb3;
 	}
-	// alert("urlA: "+ urlA);
+	//alert("lineno: "+ lineno);
 	$.ajax({
 		type : 'post',
 		url : urlB,
 		data : {
 			'workshopNo' : workshopNo,
+			'lineno' : lineno,
 			'checkState' : checkState,
 			'SDate' : SDate,
 			'EDate' : EDate,
@@ -103,8 +105,13 @@ function showSwipeCardAbnormal() {
 	});
 }
 
+/**
+ * 加班單查詢
+ * @returns
+ */
 function showRCInforByDate() {
 	var workshopNo = $("#WorkshopNo").val();
+	var lineno = $("#LineNo").val();
 	var checkState = $("#checkState").val();
 	var SDate = $("#dpick1").val();
 	var EDate = $("#dpick2").val();
@@ -130,12 +137,13 @@ function showRCInforByDate() {
 		urlA = urla3;
 		urlB = urlb3;
 	}
-	// alert("urlA: "+ urlA);
+//	 alert("lineno: "+ lineno);
 	$.ajax({
 		type : 'post',
 		url : urlB,
 		data : {
 			'workshopNo' : workshopNo,
+			'lineno' : lineno,
 			'checkState' : checkState,
 			'SDate' : SDate,
 			'EDate' : EDate,

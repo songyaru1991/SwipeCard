@@ -719,7 +719,6 @@ $access = $_SESSION["permission"];
                 //console.log($check_boxes);
                 //console.log(dropIds);
                 var workshopNo = $("#WorkshopNo").val();
-				var lineNo = $("#LineNo").val();
                 var rC_NO = $("#RC_NO").val();
                 var item_No = $("#Item_No").val();
                 //	console.log("item_No： "+item_No);
@@ -800,7 +799,6 @@ $access = $_SESSION["permission"];
                         'timeCal': timeCal,
                         'timeType': timeType,
                         'workshopNo': workshopNo,
-						'lineNo': lineNo,
                         'rC_NO': rC_NO,
                         'item_No': item_No
                     },
@@ -918,7 +916,7 @@ $access = $_SESSION["permission"];
 
 $SDate = $_POST['SDate'];
 $WorkshopNo = $_POST['WorkshopNo'];
-$LineNo = $_POST['LineNo']; 
+$lineno = $_POST['LineNo']; //為null
 $RC_NO = $_POST['rc_no'];
 $Item_No = $_POST['item_no'];
 $Shift = $_POST['Shift'];
@@ -931,9 +929,7 @@ if ($w == 6) {
 }
 
 $costid = $_SESSION['costid'];
-
- //echo "lineno:".$LineNo;
-
+// echo $costid;
 $temp_cost = explode("*", $costid);  //explode() 函数把字符串打散为数组。
 $cch = "";
 foreach ($temp_cost as $key => $val) {
@@ -960,8 +956,7 @@ $employee_overtime_sql = "select b.id,
                         			    a.overtimeCal,
                         			    a.overtimeType,
                         			    a.swipecardtime,
-                        			    a.swipecardtime2,
-										a.prod_line_code
+                        			    a.swipecardtime2
                                 FROM `testswipecardtime` a left join `testemployee` b on a.`ID`=b.`ID` 
                                         left join `emp_class` c on b.`ID`=c.`ID` and c.`emp_date`=substring(a.swipecardtime,1,10) 
                                 where Date_format(a.swipecardtime, '%Y-%m-%d') = '" . $SDate . "' 
@@ -975,17 +970,11 @@ $employee_overtime_sql = "select b.id,
 if ($Shift == "")
     $employee_overtime_sql .= "and c.`class_no` is null ";
 else
-    $employee_overtime_sql .= "and c.`class_no`='" . $Shift . "' ";
-
-if ($LineNo == "" || $LineNo == 'null')
-		$employee_overtime_sql .= " and (a.`prod_line_code`='null' or a.`prod_line_code` is null or a.`prod_line_code` ='') ";
-	else
-        $employee_overtime_sql .= "and a.`prod_line_code`='" . $LineNo. "' ";
+    $employee_overtime_sql .= "and c.`class_no`='" . $Shift . "'  ";
 
 $employee_overtime_sql .= "order by b.depid,b.id ";
 
 //echo $employee_overtime_sql;
-
 $interval_sql = "select class_start,rest_start1,rest_end1,rest_start2,rest_end2,class_end,overtime_start from `classno` where class_no='$Shift'";
 //echo $interval_sql.'<br>';
 $timeset_row = $mysqli->query($interval_sql);
@@ -1047,6 +1036,21 @@ foreach ($temp as $key => $value) {
         <p>请输入员工ID文件:<input type="file" name="file" id="file"></p>
         <p><input type="button" name="b1" value="上传" onclick="fsubmit()"></p>
     </form>
+    <?php
+//    echo "<form enctype=\"multipart/form-data\" method=\"post\" name=\"up\" action=\"overtime_order_pending_Show1.php\">
+//                    " . " <input name=\"upfile\" type=\"file\"/>
+//                    " . "<input type='submit' onclick=\"tijiao()\"/>
+//                    " . "<input type=\"hidden\" id=\"LineNo\" value=\"$lineno \"/>
+//                   " . "<input type=\"hidden\" id=\"RC_NO\" value=\" $RC_NO \"/>
+//                   " . "<input type=\"hidden\" id=\"Item_No\" value=\" $Item_No \"/>
+//                   " . "<input type=\"hidden\" id=\"Shift\" value=\"$Shift \"/>
+//                   " . "<input type=\"hidden\" id=\"WorkshopNo\" value=\" $WorkshopNo \"/>
+//                   " . "<input type=\"hidden\" id=\"Class_Start\" value=\" $class_start \"/>
+//                    " . "<input type=\"hidden\" id=\"Class_End\" value=\" $class_end \"/>
+//                  " . "<input type=\"hidden\" id=\"Overtime_Start\" value=\" $overtime_start \"/>
+//                  " . "<input type=\"hidden\" id=\"Interval_Setting\" value=\" $cch_t_set \"/>
+//                      " . " </form>" . "";
+//    ?>
 
     <table class="table table-striped" id="tbl">
         <tr>
@@ -1095,6 +1099,7 @@ foreach ($temp as $key => $value) {
                 . "<td><input type=\"hidden\" name=\"direct\" value=\"" . $row[4] . "\" />" . $row[4] . "</td>"
                 . "<td><input type=\"hidden\" name=\"yd\" value=\"" . $row[6] . "\" />" . $row[6] . "</td>"
                 . "<td id=\"tck_" . $row[8] . "\"></td>"
+
                 . "<td id=\"hour_" . $row[8] . "\" class=\"overHour\" ></td>"
 
 //value=\"" . $row[8] . "_" . $j . "\"
@@ -1127,7 +1132,7 @@ foreach ($temp as $key => $value) {
 
 </div>
 <div>
-    <input type="hidden" id="LineNo" value="<?php echo $LineNo ?>"/>
+    <input type="hidden" id="LineNo" value="<?php echo $lineno ?>"/>
     <input type="hidden" id="RC_NO" value="<?php echo $RC_NO ?>"/>
     <input type="hidden" id="Item_No" value="<?php echo $Item_No ?>"/>
     <input type="hidden" id="Shift" value="<?php echo $Shift ?>"/>

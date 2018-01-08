@@ -62,11 +62,12 @@ function getDValue() {
 }
 
 /**
- * �寞��交�蝺蝑�隞嗆閰Ｖ誑�內�株��箔蜓���
+ * 加班單查詢
  * @returns
  */
 function showRCInforByDate() {
 	var workshopNo = $("#WorkshopNo").val();
+	var lineno = $("#LineNo").val();
 	var checkState = $("#checkState").val();
 	var SDate = $("#dpick1").val();
 	var EDate = $("#dpick2").val();
@@ -97,6 +98,7 @@ function showRCInforByDate() {
 		url : urlB,
 		data : {
 			'workshopNo' : workshopNo,
+			'lineno' : lineno,
 			'checkState' : checkState,
 			'SDate' : SDate,
 			'EDate' : EDate,

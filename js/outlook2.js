@@ -49,7 +49,6 @@ function addTab(subtitle,url){
 	}else{
 		$('#tabs').tabs('select',subtitle);
 	}
-	tabClose();
 }
 
 function createFrame(url)

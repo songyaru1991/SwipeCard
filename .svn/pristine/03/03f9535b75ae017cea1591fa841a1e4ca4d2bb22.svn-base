@@ -22,11 +22,11 @@ include("mysql_config.php");
 $timeCal = $_POST['timeCal'];
 $timeType = $_POST['timeType'];
 $workshopNo = $_POST['workshopNo'];
-$lineNo = $_POST['lineNo'];
 $rC_NO = $_POST['rC_NO'];
 $item_No = $_POST['item_No'];
 
 $assistant_id = $_SESSION['assistant_id'];
+
 
 //$mysqli_free_result($cid_rows);
 
@@ -165,7 +165,7 @@ for ($i = 0; $i < count($checkValue); $i++) {
     }
     $update_sql = "update testswipecardtime set CheckState = '1',overtimeCal='" . $timeCal . "',overtimeType='" . $timeType . "' where RecordId = '" . $a[$i][0] . "'";
     $cch = "insert into notes_overtime_state (id,name,depid,depname,overtimeInterval,overtimeHours,costID,
-		        	Direct,isException,overtimeDate,shift,overtimeType,WorkshopNo,LineNo,RC_NO,PRIMARY_ITEM_NO,WorkContent,application_person, application_id,
+		        	Direct,isException,overtimeDate,shift,overtimeType,WorkshopNo,RC_NO,PRIMARY_ITEM_NO,WorkContent,application_person, application_id,
        		    	application_dep, is_lmt,application_tel) 
 			        value (";
     for ($j = 1; $j <= 9; $j++) {
@@ -175,7 +175,6 @@ for ($i = 0; $i < count($checkValue); $i++) {
     $cch .= "'" . $shift . "',";
     $cch .= "'" . $timeType . "',";
     $cch .= "'" . $workshopNo . "',";
-	$cch .= "'" . $lineNo . "',";
     $cch .= "'" . $rC_NO . "',";
     $cch .= "'" . $item_No . "',";
     $cch .= "'" . $WorkContent . "',";

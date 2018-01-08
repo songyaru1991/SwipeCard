@@ -458,6 +458,7 @@
 	<?php 
 		$SDate = $_POST['SDate'];
 		$WorkshopNo = $_POST['WorkshopNo'];
+		$LineNo = $_POST['LineNo'];
 		$RC_NO = $_POST['rc_no'];
 		$Item_No = $_POST['item_no'];
 		$Shift = $_POST['Shift'];
@@ -472,6 +473,7 @@
     		}
     		// echo $cch."<br>";
     	}
+	//	echo "LineNo:".$LineNo;
 		
 		include("mysql_config.php");
 		
@@ -499,10 +501,15 @@
             $employee_overtime_sql .= "and c.`class_no` is null ";
         else
             $employee_overtime_sql .= "and c.`class_no`='".$Shift."'  ";
+		
+		if ($LineNo == "" || $LineNo == 'null')
+			$employee_overtime_sql .= "and (a.`Lineno`='null' or a.`Lineno` is null  or a.`Lineno` ='') ";
+		else
+			$employee_overtime_sql .= "and a.`Lineno`='" . $LineNo. "' ";
             
         $employee_overtime_sql .= "order by b.depid,b.id ";
 		
-		//echo $employee_overtime_sql;
+//		echo $employee_overtime_sql;
 //		exit;	   	  
 	
 	?>
@@ -592,6 +599,7 @@
 	</div>
 	<div>
 		<input type="hidden" id="WorkshopNo" value="<?php echo $WorkshopNo?>"/>
+		<input type="hidden" id="LineNo" value="<?php echo $LineNo ?>"/>
 		<input type="hidden" id="RC_NO" value="<?php echo $RC_NO?>" />
 		<input type="hidden" id="Item_No" value="<?php echo $item_no?>" />
 		<input type="hidden" id="Shift" value="<?php echo $Shift?>" />

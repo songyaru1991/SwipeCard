@@ -17,6 +17,7 @@
 	include("mysql_config.php");
 	
 	$workshopNo = $_POST['workshopNo'];
+	$lineno = $_POST['lineno'];
 	$SDate = $_POST['SDate'];
 	$EDate = $_POST['EDate'];
 	$url = $_POST['urlA'];	
@@ -33,7 +34,8 @@
 		}
 		// echo $cch."<br>";
 	}
-	// echo $cch;
+	
+//	echo "lineno:".$lineno;
 
    $rcno_sql="SELECT
 	t.WorkshopNo,
@@ -41,6 +43,7 @@
 	t.class_no,
 	t.rc_no,
 	t.checkstate,
+	t.PROD_LINE_CODE,
 	SUM(t.count)
 FROM
 	(
@@ -52,10 +55,11 @@ FROM
 				c.`class_no`,
 				a.`rc_no`,
 				a.`checkstate`,
+				a.PROD_LINE_CODE,
 				COUNT(*) count
 			FROM
 				`testswipecardtime` a
-			LEFT JOIN `testemployee` b ON a.`CardID` = b.`CardID`
+			LEFT JOIN `testemployee` b ON a.`ID` = b.`ID`
 			LEFT JOIN `emp_class` c ON b.`ID` = c.`ID`
 			AND c.`emp_date` = SUBSTRING(a.swipecardtime, 1, 10)
 			WHERE
@@ -67,6 +71,7 @@ FROM
 			AND b.costid IN ($cch)
 			GROUP BY
 				a.`WorkshopNo`,
+				a.PROD_LINE_CODE,
 				sdate,
 				edate,
 				c.`class_no`,
@@ -74,6 +79,7 @@ FROM
 				a.`checkstate`
 			ORDER BY
 				a.`WorkshopNo`,
+				a.PROD_LINE_CODE,
 				sdate,
 				c.`class_no`,
 				a.`rc_no`,
@@ -88,10 +94,11 @@ FROM
 					c.`class_no`,
 					a.`rc_no`,
 					a.`checkstate`,
+					a.PROD_LINE_CODE,
 					COUNT(*) count
 				FROM
 					`testswipecardtime` a
-				LEFT JOIN `testemployee` b ON a.`CardID` = b.`CardID`
+				LEFT JOIN `testemployee` b ON a.`ID` = b.`ID`
 				LEFT JOIN `emp_class` c ON b.`ID` = c.`ID`
 				AND c.`emp_date` = SUBSTRING(a.swipecardtime2, 1, 10)
 				WHERE
@@ -104,6 +111,7 @@ FROM
 				AND b.costid IN ($cch)
 				GROUP BY
 					a.`WorkshopNo`,
+					a.PROD_LINE_CODE,
 					sdate,
 					edate,
 					c.`class_no`,
@@ -111,6 +119,7 @@ FROM
 					a.`checkstate`
 				ORDER BY
 					a.`WorkshopNo`,
+					a.PROD_LINE_CODE,
 					sdate,
 					c.`class_no`,
 					a.`rc_no`,
@@ -125,10 +134,11 @@ FROM
 					c.`class_no`,
 					a.`rc_no`,
 					a.`checkstate`,
+					a.PROD_LINE_CODE,
 					COUNT(*) count
 				FROM
 					`testswipecardtime` a
-				LEFT JOIN `testemployee` b ON a.`CardID` = b.`CardID`
+				LEFT JOIN `testemployee` b ON a.`ID` = b.`ID`
 				LEFT JOIN `emp_class` c ON b.`ID` = c.`ID`
 				AND c.`emp_date` = SUBSTRING(DATE_ADD(a.swipecardtime2,INTERVAL - 1 DAY),1,10)
 				WHERE
@@ -141,6 +151,7 @@ FROM
 				AND b.costid IN ($cch)
 				GROUP BY
 					a.`WorkshopNo`,
+					a.PROD_LINE_CODE,
 					sdate,
 					edate,
 					c.`class_no`,
@@ -148,21 +159,28 @@ FROM
 					a.`checkstate`
 				ORDER BY
 					a.`WorkshopNo`,
+					a.PROD_LINE_CODE,
 					sdate,
 					c.`class_no`,
 					a.`rc_no`,
 					a.`checkstate`
 			)
-	) t
-GROUP BY
-	t.`WorkshopNo`,
-	t.sdate,
-	t.`class_no`,
-	t.`rc_no`,
-	t.`checkstate`";
+	) t";
+	if ($lineno == "" || $lineno == 'null')
+		$rcno_sql .= " where (t.`prod_line_code`='null' or t.`prod_line_code` is null or t.`prod_line_code` ='') ";
+	else
+		$rcno_sql .= " where t.`prod_line_code`='" . $lineno. "' ";
+
+	$rcno_sql .= " GROUP BY
+				t.`WorkshopNo`,
+				t.PROD_LINE_CODE,
+				t.sdate,
+				t.`class_no`,
+				t.`rc_no`,
+				t.`checkstate`";
 
  
- //   echo $rcno_sql;            
+   // echo $rcno_sql;            
     $rcno_rows = $mysqli->query($rcno_sql);
 	$cch = "";
     $rc_list = array();
@@ -174,23 +192,23 @@ GROUP BY
         if(($row[4]==0)||($row[4]==9)) //找未審核
         {
             if($row[3]=="") //無指示單號
-                $norc_list[$row[0]][$row[1]][$row[2]]['mount'] = $row[5];
+                $norc_list[$row[0]][$row[1]][$row[2]][$row[5]]['mount'] = $row[6];
             else //有指示單號
             {
-                $rc_list[$row[0]][$row[1]][$row[2]][$row[3]]['mount'] = $row[5];
+                $rc_list[$row[0]][$row[1]][$row[2]][$row[3]][$row[5]]['mount'] = $row[6];
                 $rcnoStr .= "'".$row[3]."',";
             }
         }
         
         if($row[3]=="") //無指示單號
         {
-            if(isset($norc_list[$row[0]][$row[1]][$row[2]]))
-                $norc_list[$row[0]][$row[1]][$row[2]]['total'] += $row[5];
+            if(isset($norc_list[$row[0]][$row[1]][$row[2]][$row[5]]))
+                $norc_list[$row[0]][$row[1]][$row[2]][$row[5]]['total'] += $row[6];
         }
         else //有指示單號
         {
-            if(isset($rc_list[$row[0]][$row[1]][$row[2]][$row[3]]))
-                $rc_list[$row[0]][$row[1]][$row[2]][$row[3]]['total'] += $row[5];
+            if(isset($rc_list[$row[0]][$row[1]][$row[2]][$row[3]][$row[2]]))
+                $rc_list[$row[0]][$row[1]][$row[2]][$row[3]][$row[5]]['total'] += $row[6];
         }
     }
     $rcnoStr = substr($rcnoStr,0,-1);
@@ -221,7 +239,7 @@ GROUP BY
 		  . "	<table class=\"table table-striped\">"
 		  . "		<tr>"
 		  . "			<th>車間</th>"
-//		  . "			<th>線號</th>"
+		  . "			<th>線號</th>"
 		  . "			<th>日期</th>"
 		  . "			<th>班別</th>"
 		  . "			<th>指示單號</th>"
@@ -236,31 +254,35 @@ GROUP BY
          {
             foreach($date_array as $date => $class_array)
             {
-                foreach($class_array as $class => $rcno_array)
+				foreach($class_array as $class => $lineno_array)
                 {
-                    foreach($rcno_array as $rcno => $data)
-                    {
-            			$cch .= "<tr>";
-            			$cch .= "<td>".$workshop."</td>";
-            			$cch .= "<td>".$date."</td>";
-            			$cch .= "<td>".$class."</td>";
-            			$cch .= "<td>".$rcno."</td>";
-            			$cch .= "<td>".$rc_no[$rcno]['itemno']."</td>";
-            			$cch .= "<td>".$rc_no[$rcno]['manpower']."</td>";
-            			$cch .= "<td>".$data['mount']."/".$data['total']."</td>";
-            			$cch .= "<td>";
-            					//	<input type=\"hidden\" name=\"LineNo\" value=\"".$arr_lineno[$value]."\"> -->
-            			$cch .= "<form method=\"post\" action=\"".$url."\"
+					foreach($lineno_array as $lineno => $rcno_array)
+					{
+						foreach($rcno_array as $rcno => $data)
+						{
+							$cch .= "<tr>";
+							$cch .= "<td>".$workshop."</td>";
+							$cch .= "<td>".$lineno."</td>";
+							$cch .= "<td>".$date."</td>";
+							$cch .= "<td>".$class."</td>";
+							$cch .= "<td>".$rcno."</td>";
+							$cch .= "<td>".$rc_no[$rcno]['itemno']."</td>";
+							$cch .= "<td>".$rc_no[$rcno]['manpower']."</td>";
+							$cch .= "<td>".$data['mount']."/".$data['total']."</td>";
+							$cch .= "<td>";
+							$cch .= "<form method=\"post\" action=\"".$url."\"
             						target=\"gameWindow\" onsubmit=\"return openTableWindow();\">
             						<input type=\"hidden\" name=\"SDate\" value=\"".$date."\">		
             						<input type=\"hidden\" name=\"WorkshopNo\" value=\"".$workshop."\">
+									<input type=\"hidden\" name=\"LineNo\" value=\"".$lineno."\">
             						<input type=\"hidden\" name=\"rc_no\" value=\"".$rcno."\">
             						<input type=\"hidden\" name=\"item_no\" value=\"".$rc_no[$rcno]['itemno']."\">
             						<input type=\"hidden\" name=\"Shift\" value=\"".$class."\">
             						<input class=\"btn btn-primary\" type=\"submit\" value=\"詳情\" > 
             					</form>";
-            			$cch .="</td>";
-            			$cch .= "</tr>";
+							$cch .="</td>";
+							$cch .= "</tr>";
+						}
                     }
                 }
             }            
@@ -280,7 +302,7 @@ GROUP BY
 		  . "	<table class=\"table table-striped\">"
 		  . "		<tr>"
 		  . "			<th>車間</th>"
-//		  . "			<th>線號</th>"
+		  . "			<th>線號</th>"
 		  . "			<th>日期</th>"
 		  . "			<th>班別</th>"
 		  . "			<th>實際加班人數</th>"
@@ -292,25 +314,29 @@ GROUP BY
         {
             foreach($date_array as $date => $class_array)
             {
-                foreach($class_array as $class => $data)
-                {
-					$cch_no .= "<tr>";
-					$cch_no .="<td>".$workshop."</td>";
-					$cch_no .= "<td>".$date."</td>";
-					$cch_no .= "<td>".$class."</td>";
-					$cch_no .= "<td>".$data['mount']."/".$data['total']."</td>";
-					$cch_no .= "<td>";
-				//	<input type=\"hidden\" name=\"LineNo\" value=\"".$key1."\">
-					$cch_no .= "<form method=\"post\" action=\"".$url."\"
+				foreach($class_array as $class => $lineno_array)
+				{
+					foreach($lineno_array as $lineno => $data)
+					{
+						$cch_no .= "<tr>";
+						$cch_no .="<td>".$workshop."</td>";
+						$cch_no .="<td>".$lineno."</td>";
+						$cch_no .= "<td>".$date."</td>";
+						$cch_no .= "<td>".$class."</td>";
+						$cch_no .= "<td>".$data['mount']."/".$data['total']."</td>";
+						$cch_no .= "<td>";
+						$cch_no .= "<form method=\"post\" action=\"".$url."\"
 								target=\"gameWindow\" onsubmit=\"return openTableWindow();\">
-								<input type=\"hidden\" name=\"WorkshopNo\"value=\"".$workshop."\">									
+								<input type=\"hidden\" name=\"WorkshopNo\"value=\"".$workshop."\">	
+                                <input type=\"hidden\" name=\"LineNo\"value=\"".$lineno."\">											
 								<input type=\"hidden\" name=\"SDate\" value=\"".$date."\">
 								<input type=\"hidden\" name=\"Shift\"value=\"".$class."\">
 								
 								<input class=\"btn btn-primary\" type=\"submit\" value=\"詳情\" > 
 							</form>";
-					$cch_no .="</td>";
-                    $cch_no .= "</tr>";
+						$cch_no .="</td>";
+						$cch_no .= "</tr>";
+					}
 				}
 			}
 		}

@@ -7,7 +7,7 @@ $mysqli1 = new mysqli($MYSQL_HOST,$MYSQL_LOGIN,$MYSQL_PASSWORD,"swipecard");
 $mysqli1->query("SET NAMES 'utf8'");  
 $mysqli1->query('SET CHARACTER_SET_CLIENT=utf8');
 $mysqli1->query('SET CHARACTER_SET_RESULTS=utf8');
-$sql = "Select id,name,costID,depName,Direct,overTimeDate,WorkContent,overtimeHours,overtimeType,overtimeInterval,rid,shift,application_person, application_id, application_dep, application_tel from `notes_overtime_state` where notesStates = 0";
+$sql = "Select id,name,costID,depName,Direct,overTimeDate,WorkContent,overtimeHours,overtimeType,overtimeInterval,rid,shift,application_person, application_id, application_dep, application_tel,LineNo from `notes_overtime_state` where notesStates = 0";
 
 $rows = $mysqli1->query($sql);
 // echo $sql;
