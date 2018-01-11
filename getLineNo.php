@@ -9,7 +9,7 @@ while($row=$query->fetch_array()){
     $lineno[]=$row;
 }
 ?>
-<select id="LineNo" name="LineNo"">
+<select id="LineNo" name="LineNo">
     <option value="%">--線名--</option>
     <?php
     foreach($lineno as $k=>$v){

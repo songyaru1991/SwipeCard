@@ -30,20 +30,26 @@ while($row = $line_rows->fetch_array()){
         $(document).ready(function () {
             $("#WorkshopNo").change(function () {
                 var workshopno = $(this).val();
-
-                $("#lineSpan").load("getLineNo.php?workshopno=" + workshopno);
+				var byWorkShopOrLineNo = $("#byWorkShopOrLineNo").val();
+				if(byWorkShopOrLineNo=='byLineNo'){
+					$("#lineSpan").load("getLineNo.php?workshopno=" + workshopno);
+				}				
+				LineNoStatus(byWorkShopOrLineNo);
             });
 			
-			 $("#byWorkShopOrLineNo").change(function(){
-			var byWorkShopOrLineNo = $(this).val();
-			if(byWorkShopOrLineNo=='byWorkShop'){
-				$("#LineNo").val("%");
-				$("#LineNo").prop("disabled",true);
-			}
-			else{
-				$("#LineNo").prop("disabled",false);
+			$("#byWorkShopOrLineNo").change(function(){
+				var byWorkShopOrLineNo = $(this).val();
+				LineNoStatus(byWorkShopOrLineNo);
+			});
+			function LineNoStatus(byWorkShopOrLineNo){
+				if(byWorkShopOrLineNo=='byWorkShop'){
+					$("#LineNo").val("%");
+					$("#LineNo").prop("disabled",true);
 				}
-			}) 			
+				else{
+					$("#LineNo").prop("disabled",false);
+					}
+			}		
 			
         })	   
 
