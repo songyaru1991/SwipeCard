@@ -163,7 +163,6 @@
 
 		$(function() {
 
-			openPwd();
 			//
 			$('#editpass').click(function() {
 				$('#w').window('open');

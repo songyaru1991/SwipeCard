@@ -67,25 +67,46 @@ function showSwipeCardAbnormal() {
 	var checkState = $("#checkState").val();
 	var SDate = $("#dpick1").val();
 	var EDate = $("#dpick2").val();
+	var byWorkShopOrLineNo = $("#byWorkShopOrLineNo").val();
 	
+	
+	if(byWorkShopOrLineNo=='byWorkShop'){
+		lineno="";
+	}
+	else{
+		lineno = $("#LineNo").val();
+	}
 	
 	var urlA = "";
 	var urla1 = "overtime_order_pending_Abnormal.php";
 	var urla2 = "overtime_order_identified_Abnormal.php";
 	var urlB = "";
-	var urlb1 = "show_overtime_Abnormal_ing.php";
-	var urlb2 = "show_overtime_Abnormal_ed.php";
+	var urlb1 = "show_overtime_Abnormal_ing_ByLineNo.php";
+	var urlb2 = "show_overtime_Abnormal_ed_ByLineNo.php";
+	
+	var urlc1 = "show_overtime_Abnormal_ing_ByWorkShop.php";
+	var urlc2 = "show_overtime_Abnormal_ed_ByWorkShop.php";
+	
 	console.log(urlb1);
-	if (checkState.indexOf("0") >= 0 || checkState.indexOf("9") >= 0) {
-		urlA = urla1;
-		urlB = urlb1;
-	} else if (checkState == 1) {
-		urlA = urla2;
-		urlB = urlb2;
-	} else {
-		urlA = urla3;
-		urlB = urlb3;
+	if(byWorkShopOrLineNo=='byLineNo'){
+		if (checkState.indexOf("0") >= 0 || checkState.indexOf("9") >= 0) {
+			urlA = urla1;
+			urlB = urlb1;
+		} else if (checkState == 1) {
+			urlA = urla2;
+			urlB = urlb2;
+		}
 	}
+	else{
+		if (checkState.indexOf("0") >= 0 || checkState.indexOf("9") >= 0) {
+			urlA = urla1;
+			urlB = urlc1;
+		} else if (checkState == 1) {
+			urlA = urla2;
+			urlB = urlc2;
+		} 
+	}
+	
 	//alert("lineno: "+ lineno);
 	$.ajax({
 		type : 'post',
@@ -115,28 +136,47 @@ function showRCInforByDate() {
 	var checkState = $("#checkState").val();
 	var SDate = $("#dpick1").val();
 	var EDate = $("#dpick2").val();
+	var byWorkShopOrLineNo = $("#byWorkShopOrLineNo").val();
 	
+	
+	if(byWorkShopOrLineNo=='byWorkShop'){
+		lineno="";
+	}
+	else{
+		lineno = $("#LineNo").val();
+	}
 	
 	var urlA = "";
 	var urla1 = "overtime_order_pending_Show1.php";
 	var urla2 = "overtime_order_identified_Show1.php";
-	var urla3 = "overtime_order_check_Show.php";
 	var urlB = "";
-	var urlb1 = "show_overtime_rcno_ing1.php";//TODO
-	var urlb2 = "show_overtime_rcno_ed1.php";
-	var urlb3 = "show_overtime_rcno_all.php";
+	var urlb1 = "show_overtime_rcno_ing_ByLineNo.php";
+	var urlb2 = "show_overtime_rcno_ed_ByLineNo.php";
+	
+	var urlc1 = "show_overtime_rcno_ing_ByWorkShop.php";
+    var urlc2 = "show_overtime_rcno_ed_ByWorkShop.php";
+	
 	console.log(urlb1);
-	if (checkState.indexOf("0") >= 0 || checkState.indexOf("9") >= 0) {
-		urlA = urla1;
-		urlB = urlb1;
-	} else if (checkState == 1) {
-
-		urlA = urla2;
-		urlB = urlb2;
-	} else {
-		urlA = urla3;
-		urlB = urlb3;
+	if(byWorkShopOrLineNo=='byLineNo'){
+		if (checkState.indexOf("0") >= 0 || checkState.indexOf("9") >= 0) {
+			urlA = urla1;
+			urlB = urlb1;
+		} else if (checkState == 1) {
+			urlA = urla2;
+			urlB = urlb2;
+		} 
 	}
+	else{
+		if (checkState.indexOf("0") >= 0 || checkState.indexOf("9") >= 0) {
+			urlA = urla1;
+			urlB = urlc1;
+		} else if (checkState == 1) {
+			urlA = urla2;
+			urlB = urlc2;
+		} 
+	}
+	
+	
 //	 alert("lineno: "+ lineno);
 	$.ajax({
 		type : 'post',
@@ -147,6 +187,7 @@ function showRCInforByDate() {
 			'checkState' : checkState,
 			'SDate' : SDate,
 			'EDate' : EDate,
+			'byWorkShopOrLineNo':byWorkShopOrLineNo,
 			'urlA' : urlA
 		},
 		success : function(msg) {
@@ -216,7 +257,7 @@ function showRCInforByDatetest() {
 	var urlB = "";
 	var urlb1 = "show_overtime_rcno_ing.php";
 	var urlb2 = "show_overtime_rcno_ed.php";
-	var urlb3 = "show_overtime_rcno_all.php";
+	var urlb3 = "show_overtime_rcno_al.php";
 	console.log(checkState);
 	if (checkState.indexOf("0") >= 0 || checkState.indexOf("9") >= 0) {
 		urlA = urla1;

@@ -23,7 +23,6 @@ while($row = $line_rows->fetch_array()){
 <link href="assets/css/plugins.css" rel="stylesheet">
 <link href="assets/css/main.css" rel="stylesheet">
     <script src="js/jquery-3.2.1.min.js"></script>
-    <script src="js/jquery.js"></script>
 <!--<script src="assets/js/jquery-1.8.3.min.js"></script>-->
 <script language="javascript" type="text/javascript" src="assets/My97DatePicker/WdatePicker.js"></script>
 <script src="js/Button_Plugins1.js"></script>
@@ -34,8 +33,19 @@ while($row = $line_rows->fetch_array()){
 
                 $("#lineSpan").load("getLineNo.php?workshopno=" + workshopno);
             });
-        })
-
+			
+			 $("#byWorkShopOrLineNo").change(function(){
+			var byWorkShopOrLineNo = $(this).val();
+			if(byWorkShopOrLineNo=='byWorkShop'){
+				$("#LineNo").val("%");
+				$("#LineNo").prop("disabled",true);
+			}
+			else{
+				$("#LineNo").prop("disabled",false);
+				}
+			}) 			
+			
+        })	   
 
     </script>
 </head>
@@ -58,6 +68,12 @@ while($row = $line_rows->fetch_array()){
 			開始日期-<input id="dpick1" class="Wdate" type="text"
 				onClick="WdatePicker()"> 結束日期-<input id="dpick2"
 				class="Wdate" type="text" onClick="WdatePicker({maxDate:'%y-%M-#{%d-1}'})">
+
+			按車間或線號查詢-<select id="byWorkShopOrLineNo">
+				<option value="byWorkShop">車間</option>
+				<option value="byLineNo">線體</option>
+			</select> 
+			
             車間<select id="WorkshopNo">
 				<option value="%">All</option>
 
@@ -65,23 +81,13 @@ while($row = $line_rows->fetch_array()){
                 foreach ($workshopNo as $k=>$v){
                     ?>
                 <option value="<?php echo $v['workshopno']?>"><?php echo $v['workshopno']?></option>
-
-<!--
-                   $cch = '';
-				foreach($workshopNo as $key => $val){
-					$cch .= "<option value = \"".$val."\">";
-					$cch .= $val;
-					$cch .= "</option>";
-
-				}
-				echo $cch;-->
-
                 <?php
                 }
                 ?>
             </select>
+			
             線名<span id="lineSpan">
-                   <select  id="LineNo" name="LineNo">
+                   <select  id="LineNo" name="LineNo" disabled="disabled">
 
                     <option value="%">--線名--</option>
                    </select>

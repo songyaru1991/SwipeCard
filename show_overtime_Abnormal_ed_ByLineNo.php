@@ -34,10 +34,9 @@
 		}
 		// echo $cch."<br>";
 	}
+	// echo $cch;
 	
-//	echo "lineno:".$lineno;
-
-   $rcno_sql="SELECT
+    $rcno_sql = "SELECT
 	t.WorkshopNo,
 	t.sdate,
 	t.class_no,
@@ -59,7 +58,7 @@ FROM
 				COUNT(*) count
 			FROM
 				`testswipecardtime` a
-			LEFT JOIN `testemployee` b ON a.`ID` = b.`ID`
+			LEFT JOIN `testemployee` b ON a.`CardID` = b.`CardID`
 			LEFT JOIN `emp_class` c ON b.`ID` = c.`ID`
 			AND c.`emp_date` = SUBSTRING(a.swipecardtime, 1, 10)
 			WHERE
@@ -98,7 +97,7 @@ FROM
 					COUNT(*) count
 				FROM
 					`testswipecardtime` a
-				LEFT JOIN `testemployee` b ON a.`ID` = b.`ID`
+				LEFT JOIN `testemployee` b ON a.`CardID` = b.`CardID`
 				LEFT JOIN `emp_class` c ON b.`ID` = c.`ID`
 				AND c.`emp_date` = SUBSTRING(a.swipecardtime2, 1, 10)
 				WHERE
@@ -138,7 +137,7 @@ FROM
 					COUNT(*) count
 				FROM
 					`testswipecardtime` a
-				LEFT JOIN `testemployee` b ON a.`ID` = b.`ID`
+				LEFT JOIN `testemployee` b ON a.`CardID` = b.`CardID`
 				LEFT JOIN `emp_class` c ON b.`ID` = c.`ID`
 				AND c.`emp_date` = SUBSTRING(DATE_ADD(a.swipecardtime2,INTERVAL - 1 DAY),1,10)
 				WHERE
@@ -169,7 +168,7 @@ FROM
 	if ($lineno == "" || $lineno == 'null')
 		$rcno_sql .= " where (t.`prod_line_code`='null' or t.`prod_line_code` is null or t.`prod_line_code` ='') ";
 	else
-		$rcno_sql .= " where t.`prod_line_code`='" . $lineno. "' ";
+		$rcno_sql .= " where t.`prod_line_code` like '" . $lineno. "' ";
 
 	$rcno_sql .= " GROUP BY
 				t.`WorkshopNo`,
@@ -179,8 +178,7 @@ FROM
 				t.`rc_no`,
 				t.`checkstate`";
 
- 
-   // echo $rcno_sql;            
+    //echo $rcno_sql;            
     $rcno_rows = $mysqli->query($rcno_sql);
 	$cch = "";
     $rc_list = array();
@@ -189,7 +187,7 @@ FROM
     
     while($row = $rcno_rows->fetch_row())
     {
-        if(($row[4]==0)||($row[4]==9)) //找未審核
+        if($row[4]==1) //找已審核
         {
             if($row[3]=="") //無指示單號
                 $norc_list[$row[0]][$row[1]][$row[2]][$row[5]]['mount'] = $row[6];
@@ -207,14 +205,13 @@ FROM
         }
         else //有指示單號
         {
-            if(isset($rc_list[$row[0]][$row[1]][$row[2]][$row[3]][$row[2]]))
+            if(isset($rc_list[$row[0]][$row[1]][$row[2]][$row[3]][$row[5]]))
                 $rc_list[$row[0]][$row[1]][$row[2]][$row[3]][$row[5]]['total'] += $row[6];
         }
     }
     $rcnoStr = substr($rcnoStr,0,-1);
     mysqli_free_result($rcno_rows);
-	
-	
+    
     $manPower_sql = "select rc_no,std_man_power,primary_item_no from testrcline 
                     where CUR_DATE > DATE_SUB(curdate(),INTERVAL 30 DAY) ";
                     
@@ -254,7 +251,7 @@ FROM
          {
             foreach($date_array as $date => $class_array)
             {
-				foreach($class_array as $class => $lineno_array)
+                foreach($class_array as $class => $lineno_array)
                 {
 					foreach($lineno_array as $lineno => $rcno_array)
 					{
@@ -270,6 +267,7 @@ FROM
 							$cch .= "<td>".$rc_no[$rcno]['manpower']."</td>";
 							$cch .= "<td>".$data['mount']."/".$data['total']."</td>";
 							$cch .= "<td>";
+            					
 							$cch .= "<form method=\"post\" action=\"".$url."\"
             						target=\"gameWindow\" onsubmit=\"return openTableWindow();\">
             						<input type=\"hidden\" name=\"SDate\" value=\"".$date."\">		
@@ -325,10 +323,11 @@ FROM
 						$cch_no .= "<td>".$class."</td>";
 						$cch_no .= "<td>".$data['mount']."/".$data['total']."</td>";
 						$cch_no .= "<td>";
+
 						$cch_no .= "<form method=\"post\" action=\"".$url."\"
 								target=\"gameWindow\" onsubmit=\"return openTableWindow();\">
-								<input type=\"hidden\" name=\"WorkshopNo\"value=\"".$workshop."\">	
-                                <input type=\"hidden\" name=\"LineNo\"value=\"".$lineno."\">											
+								<input type=\"hidden\" name=\"WorkshopNo\"value=\"".$workshop."\">		
+	                            <input type=\"hidden\" name=\"LineNo\"value=\"".$lineno."\">									
 								<input type=\"hidden\" name=\"SDate\" value=\"".$date."\">
 								<input type=\"hidden\" name=\"Shift\"value=\"".$class."\">
 								

@@ -51,10 +51,17 @@
                         and a.swipecardtime2 is not null 
 						and b.isOnWork=0
                         and a.`WorkshopNo` like '".$workshopNo."' 
-                        and b.costid in ($cch)  
-                group by a.`WorkshopNo`,a.PROD_LINE_CODE,sdate,c.`class_no`,a.`rc_no`,a.`checkstate` 
+						
+                        and b.costid in ($cch) ";
+	if ($lineno == "" || $lineno == 'null')		
+		$rcno_sql .= " AND (a.`prod_line_code`='null' or a.`prod_line_code` is null or a.`prod_line_code` ='') ";
+	else
+		$rcno_sql .= "AND a.prod_line_code like '".$lineno."'"; 
+		   
+    $rcno_sql .=" group by a.`WorkshopNo`,a.PROD_LINE_CODE,sdate,c.`class_no`,a.`rc_no`,a.`checkstate` 
                 order by a.`WorkshopNo`,a.PROD_LINE_CODE,sdate,c.`class_no`,a.`rc_no`,a.`checkstate` ";
     
+	
   //  echo $rcno_sql;            
     $rcno_rows = $mysqli->query($rcno_sql);
 	$cch = "";
