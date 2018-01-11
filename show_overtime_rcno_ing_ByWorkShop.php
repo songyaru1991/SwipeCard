@@ -17,6 +17,7 @@
 	include("mysql_config.php");
 	
 	$workshopNo = $_POST['workshopNo'];
+	$lineno = $_POST['lineno'];
 	$SDate = $_POST['SDate'];
 	$EDate = $_POST['EDate'];
 	$url = $_POST['urlA'];	
@@ -143,6 +144,7 @@
             						target=\"gameWindow\" onsubmit=\"return openTableWindow();\">
             						<input type=\"hidden\" name=\"SDate\" value=\"".$date."\">		
             						<input type=\"hidden\" name=\"WorkshopNo\" value=\"".$workshop."\">
+									<input type=\"hidden\" name=\"LineNo\"value=\"".$lineno."\">
             						<input type=\"hidden\" name=\"rc_no\" value=\"".$rcno."\">
             						<input type=\"hidden\" name=\"item_no\" value=\"".$rc_no[$rcno]['itemno']."\">
             						<input type=\"hidden\" name=\"Shift\" value=\"".$class."\">
@@ -192,7 +194,8 @@
 				//	<input type=\"hidden\" name=\"LineNo\" value=\"".$key1."\">
 					$cch_no .= "<form method=\"post\" action=\"".$url."\"
 								target=\"gameWindow\" onsubmit=\"return openTableWindow();\">
-								<input type=\"hidden\" name=\"WorkshopNo\"value=\"".$workshop."\">									
+								<input type=\"hidden\" name=\"WorkshopNo\"value=\"".$workshop."\">	
+								<input type=\"hidden\" name=\"LineNo\"value=\"".$lineno."\">									
 								<input type=\"hidden\" name=\"SDate\" value=\"".$date."\">
 								<input type=\"hidden\" name=\"Shift\"value=\"".$class."\">
 								

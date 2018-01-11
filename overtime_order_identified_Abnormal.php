@@ -506,7 +506,7 @@
 		if ($LineNo == "" || $LineNo == 'null')
 			$employee_overtime_sql .= "and (a.`Lineno`='null' or a.`Lineno` is null or a.`Lineno` ='') ";
 		else
-			$employee_overtime_sql .= "and a.`Lineno`='" . $LineNo. "' ";
+			$employee_overtime_sql .= "and a.`Lineno` like '" . $LineNo. "' ";
             
         $employee_overtime_sql .= "order by b.depid,b.id ";
 		

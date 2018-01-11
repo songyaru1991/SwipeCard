@@ -866,7 +866,7 @@
         if ($LineNo == "" || $LineNo == 'null')
 			$employee_overtime_sql .= "where (t.`prod_line_code`='null' or t.`prod_line_code` is null or t.`prod_line_code` ='') ";
 		else
-			$employee_overtime_sql .= "where t.`prod_line_code`='" . $LineNo. "' ";
+			$employee_overtime_sql .= "where t.`prod_line_code` like '" . $LineNo. "' ";
             
             $employee_overtime_sql .= "order by t.depid,t.id ";
 		

@@ -69,14 +69,6 @@ function showSwipeCardAbnormal() {
 	var EDate = $("#dpick2").val();
 	var byWorkShopOrLineNo = $("#byWorkShopOrLineNo").val();
 	
-	
-	if(byWorkShopOrLineNo=='byWorkShop'){
-		lineno="";
-	}
-	else{
-		lineno = $("#LineNo").val();
-	}
-	
 	var urlA = "";
 	var urla1 = "overtime_order_pending_Abnormal.php";
 	var urla2 = "overtime_order_identified_Abnormal.php";
@@ -137,14 +129,6 @@ function showRCInforByDate() {
 	var SDate = $("#dpick1").val();
 	var EDate = $("#dpick2").val();
 	var byWorkShopOrLineNo = $("#byWorkShopOrLineNo").val();
-	
-	
-	if(byWorkShopOrLineNo=='byWorkShop'){
-		lineno="";
-	}
-	else{
-		lineno = $("#LineNo").val();
-	}
 	
 	var urlA = "";
 	var urla1 = "overtime_order_pending_Show1.php";
