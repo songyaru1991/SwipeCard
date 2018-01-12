@@ -135,11 +135,11 @@
          {			 
             foreach($date_array as $date => $class_array)
             {
-                foreach($class_array as $class => $lineno_array)
+                foreach($class_array as $class => $rcno_array)
                 {
-					foreach($lineno_array as $lineno => $rcno_array)
+					foreach($rcno_array as $rcno => $lineno_array)
 					{
-						foreach($rcno_array as $rcno => $data)
+						foreach($lineno_array as $lineno => $data)
 						{
 							$cch .= "<tr>";
 							$cch .= "<td>".$workshop."</td>";

@@ -180,7 +180,7 @@ FROM
 				t.`checkstate`";
 
  
-   // echo $rcno_sql;            
+ //   echo $rcno_sql;            
     $rcno_rows = $mysqli->query($rcno_sql);
 	$cch = "";
     $rc_list = array();
@@ -207,8 +207,8 @@ FROM
         }
         else //有指示單號
         {
-            if(isset($rc_list[$row[0]][$row[1]][$row[2]][$row[3]][$row[2]]))
-                $rc_list[$row[0]][$row[1]][$row[2]][$row[3]][$row[5]]['total'] += $row[6];
+            if(isset($rc_list[$row[0]][$row[1]][$row[2]][$row[3]][$row[5]]))
+			    $rc_list[$row[0]][$row[1]][$row[2]][$row[3]][$row[5]]['total'] += $row[6];
         }
     }
     $rcnoStr = substr($rcnoStr,0,-1);
@@ -250,16 +250,17 @@ FROM
 		  . "		</tr>"
 		  ."";
 		 
+	
 		 foreach($rc_list as $workshop => $date_array)
-         {
+         {			 
             foreach($date_array as $date => $class_array)
             {
-				foreach($class_array as $class => $lineno_array)
+                foreach($class_array as $class => $rcno_array)
                 {
-					foreach($lineno_array as $lineno => $rcno_array)
+					foreach($rcno_array as $rcno => $lineno_array)
 					{
-						foreach($rcno_array as $rcno => $data)
-						{
+						foreach($lineno_array as $lineno => $data)
+						{					
 							$cch .= "<tr>";
 							$cch .= "<td>".$workshop."</td>";
 							$cch .= "<td>".$lineno."</td>";
@@ -267,7 +268,7 @@ FROM
 							$cch .= "<td>".$class."</td>";
 							$cch .= "<td>".$rcno."</td>";
 							$cch .= "<td>".$rc_no[$rcno]['itemno']."</td>";
-							$cch .= "<td>".$rc_no[$rcno]['manpower']."</td>";
+							$cch .= "<td>".$rc_no[$rcno]['manpower']."</td>";						
 							$cch .= "<td>".$data['mount']."/".$data['total']."</td>";
 							$cch .= "<td>";
 							$cch .= "<form method=\"post\" action=\"".$url."\"
