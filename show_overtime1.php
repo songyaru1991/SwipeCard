@@ -76,11 +76,11 @@ while($row = $line_rows->fetch_array()){
 				class="Wdate" type="text" onClick="WdatePicker({maxDate:'%y-%M-#{%d-1}'})">
 
 			按車間或線號查詢-<select id="byWorkShopOrLineNo">
-				<option value="byWorkShop">車間</option>
-				<option value="byLineNo">線體</option>
+				<option value="byWorkShop">只按車間</option>
+				<option value="byLineNo">车间+線體</option>
 			</select> 
 			
-            車間<select id="WorkshopNo">
+            車間-<select id="WorkshopNo">
 				<option value="%">All</option>
 
 				<?php
@@ -92,7 +92,7 @@ while($row = $line_rows->fetch_array()){
                 ?>
             </select>
 			
-            線名<span id="lineSpan">
+            線名-<span id="lineSpan">
                    <select  id="LineNo" name="LineNo" disabled="disabled">
 
                     <option value="%">--線名--</option>
